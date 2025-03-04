@@ -27,11 +27,7 @@ nest_next_chat_app/
 │
 ├── frontend/
 │   ├── pages/
-│   │   ├── api/
-│   │   ├── login.tsx
-│   │   ├── register.tsx
-│   │   ├── index.tsx
-│   │   └── chat.tsx
+│   │   ├── ...
 │   ├── styles/
 │   │   ├── globals.css
 │   │   └── ...
