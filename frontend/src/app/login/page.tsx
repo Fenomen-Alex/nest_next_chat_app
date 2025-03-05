@@ -7,15 +7,28 @@ import { useAuth } from '@/context/AuthContext';
 
 const LOGIN_USER = gql`
   mutation Login($email: String!, $password: String!) {
-    login(email: $email, password: $password)
+    login(email: $email, password: $password) {
+      user {
+        id
+        email
+        name
+        role
+      }
+      token
+    }
   }
 `;
 
 const REGISTER_USER = gql`
   mutation Register($name: String!, $email: String!, $password: String!) {
     register(name: $name, email: $email, password: $password) {
-      id
-      email
+      user {
+        id
+        email
+        name
+        role
+      }
+      token
     }
   }
 `;
@@ -34,8 +47,10 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const { data } = await loginUser ({ variables: { email, password } });
-      const token = data.login;
-      login(token);
+      console.log(data);
+      const token = data.login.token;
+      const user = data.login.user;
+      login(user, token);
       localStorage.setItem('token', token);
       router.push('/');
     } catch (error) {
@@ -47,6 +62,7 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const { data } = await registerUser ({ variables: { name, email, password } });
+      console.log(data);
       setIsRegistering(false); // Switch back to login after successful registration
     } catch (error) {
       console.error('Registration failed:', error);
@@ -88,7 +104,7 @@ const LoginPage = () => {
           />
           <button
             type="submit"
-            className="w-full p-2 text-white bg-primary rounded hover:bg-blue-600 focus:outline-none"
+            className="w-full p-2 cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none"
           >
             {isRegistering ? 'Register' : 'Login'}
           </button>

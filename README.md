@@ -57,7 +57,7 @@ cd nest_next_chat_app
 Create a `.env` file in the project root with the following content:
 
 ```
-DATABASE_URL=postgres://user:password@db:5432/nest_next_chat_app
+DATABASE_URL=
 ```
 
 ### 3. Build and Run with Docker
