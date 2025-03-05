@@ -4,18 +4,29 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - '3000:3000'
-    depends_on:
-      - db
+    volumes:
+      - ./backend/src:/usr/src/app/src
+      - ./backend/package*.json:/usr/src/app/package*.json
+    environment:
+      - NODE_ENV=development
     env_file:
       - .env
+    command: npm run start:dev
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     ports:
       - '3001:3000'
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
 
   db:
     image: postgres:13

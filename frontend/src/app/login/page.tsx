@@ -34,7 +34,6 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const { data } = await loginUser ({ variables: { email, password } });
-      console.log('hey', data);
       const token = data.login;
       login(token);
       localStorage.setItem('token', token);
