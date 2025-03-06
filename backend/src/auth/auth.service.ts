@@ -2,7 +2,7 @@ import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/co
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../user/user.entity';
+import { User, UserRole } from '../user/user.entity';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
@@ -78,6 +78,19 @@ export class AuthService {
       user,
       token: this.jwtService.sign(payload, { secret: this.jwtSecret })
     };
+  }
+
+  async updateUser(updateDto: { name?: string; email?: string; role?: UserRole }): Promise<User> {
+    const user = await this.usersRepository.findOne({ where: { email: updateDto.email } });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    if (updateDto.name) user.name = updateDto.name;
+    if (updateDto.email) user.email = updateDto.email;
+    if (updateDto.role) user.role = updateDto.role;
+
+    return await this.usersRepository.save(user);
   }
 
   getJwtSecret(): string {

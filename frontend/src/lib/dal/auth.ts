@@ -40,15 +40,6 @@ const GET_USERS = gql`
   }
 `;
 
-const UPDATE_USER_ROLE = gql`
-  mutation UpdateUserRole($userId: Int!, $role: String!) {
-    updateUserRole(userId: $userId, role: $role) {
-      id
-      role
-    }
-  }
-`;
-
 export async function login(email: string, password: string) {
   try {
     const { data } = await client.mutate({
@@ -100,6 +91,30 @@ export async function getUsers() {
       query: GET_USERS,
     });
     return data.users;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function updateUser(name?: string, email?: string, role?: string) {
+  const query = gql`
+    mutation {
+      updateUser(name: "${name}", email: "${email}", role: "${role}") {
+        id
+        email
+        name
+        role
+      }
+    }
+  `;
+
+  try {
+    const { data } = await client.mutate({
+      mutation: query,
+      variables: { name, email, role },
+    });
+    return data.updateUser;
   } catch (error) {
     console.error(error);
     throw error;

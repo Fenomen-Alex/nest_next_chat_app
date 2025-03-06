@@ -34,3 +34,16 @@ export type FormState =
   message?: string
 }
   | undefined
+
+
+export const UpdateUserSchema = z.object({
+  name: z
+    .string()
+    .min(2, { message: 'Name must be at least 2 characters long.' })
+    .trim(),
+  email: z.string().email({ message: 'Please enter a valid email.' }).trim(),
+  role: z.string().min(1, 'Role is required'),
+});
+
+export type UpdateUser = z.infer<typeof UpdateUserSchema>;
+

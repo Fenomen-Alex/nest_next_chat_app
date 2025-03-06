@@ -1,6 +1,6 @@
 import { Args, Field, Mutation, ObjectType, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
-import { User } from '../user/user.entity';
+import { User, UserRole } from '../user/user.entity';
 
 @ObjectType()
 export class LoginResponse {
@@ -35,5 +35,14 @@ export class AuthResolver {
   @Mutation(() => String)
   async refreshToken(@Args('refreshToken') refreshToken: string): Promise<{ token: string }> {
     return this.authService.refresh_token(refreshToken);
+  }
+
+  @Mutation(() => User)
+  async updateUser(
+    @Args('name', { nullable: true }) name?: string,
+    @Args('email', { nullable: true }) email?: string,
+    @Args('role', { nullable: true }) role?: UserRole,
+  ) {
+    return this.authService.updateUser({ name, email, role });
   }
 }
