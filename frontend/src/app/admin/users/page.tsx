@@ -1,4 +1,3 @@
-import { User } from '@/types/user';
 import { getUser } from '@/lib/utils/getUser';
 import { redirect } from 'next/navigation';
 import { getUsers } from '@/lib/dal/auth';
@@ -11,7 +10,6 @@ const Users = async () => {
   }
 
   const users = await getUsers();
-  console.log(users);
 
   return (
     <div className="container mx-auto p-4 mt-4">

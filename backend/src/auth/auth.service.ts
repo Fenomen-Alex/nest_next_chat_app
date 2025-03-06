@@ -22,7 +22,7 @@ export class AuthService {
   async register(name: string, email: string, password: string): Promise<{
     user: User;
     token: string;
-    refreshToken: string
+    refresh_token: string
   }> {
     const existingUser = await this.usersRepository.findOne({ where: { email } });
     if (existingUser) {
@@ -34,15 +34,14 @@ export class AuthService {
     await this.usersRepository.save(user);
 
     const payload = { email: user.email, sub: user.id };
-    const accessToken = this.jwtService.sign(payload, { secret: this.jwtSecret, expiresIn: '1h' });
-    const refreshToken = this.jwtService.sign(payload, { secret: this.jwtSecret, expiresIn: '7d' });
+    const token = this.jwtService.sign(payload, { secret: this.jwtSecret, expiresIn: '1h' });
+    const refresh_token = this.jwtService.sign(payload, { secret: this.jwtSecret, expiresIn: '7d' });
 
-    return { user, token: accessToken, refreshToken };
+    return { user, token, refresh_token };
   }
 
-  async refresh_token(refreshToken: string): Promise<{ token: string }> {
+  async refreshToken(refreshToken: string): Promise<{ access_token: string }> {
     const decoded = this.jwtService.verify(refreshToken, { secret: this.jwtSecret });
-
     if (!decoded) {
       throw new UnauthorizedException('Invalid refresh token');
     }
@@ -55,7 +54,7 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign({ email: user.email, sub: user.id }, { secret: this.jwtSecret, expiresIn: '1h' });
 
-    return { token: accessToken };
+    return { access_token: accessToken };
   }
 
   async validateUser (email: string, password: string): Promise<any> {
@@ -67,17 +66,17 @@ export class AuthService {
     return null;
   }
 
-  async login(email: string, password: string): Promise<{ user: User; token: string }> {
+  async login(email: string, password: string): Promise<{ user: any; token: string; refresh_token: string }> {
     const user = await this.validateUser (email, password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const payload = { email: user.email, sub: user.id };
-    return {
-      user,
-      token: this.jwtService.sign(payload, { secret: this.jwtSecret })
-    };
+    const token = this.jwtService.sign(payload, { secret: this.jwtSecret, expiresIn: '1h' });
+    const refresh_token = this.jwtService.sign(payload, { secret: this.jwtSecret, expiresIn: '7d' });
+
+    return { user, token, refresh_token };
   }
 
   async updateUser(updateDto: { name?: string; email?: string; role?: UserRole }): Promise<User> {

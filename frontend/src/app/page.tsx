@@ -4,7 +4,6 @@ import { getUser } from '@/lib/utils/getUser';
 
 const Home = async () => {
   const user = await getUser();
-  console.log(user);
 
   if(!user) {
     redirect('/auth?mode=login');

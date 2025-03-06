@@ -3,7 +3,7 @@ import { login } from '@/lib/dal/auth';
 
 export async function POST(request: NextRequest) {
   const { email, password } = await request.json();
-  const { token, user } = await login(email, password);
+  const { token, user, refresh_token } = await login(email, password);
 
   const userString = JSON.stringify(user);
 
@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
       headers: {
         'Set-Cookie': [
           `token=${token}; Path=/; HttpOnly`,
+          `refresh_token=${refresh_token}; Path=/; HttpOnly`,
           `user=${encodeURIComponent(userString)}; Path=/; HttpOnly`,
         ].join(', '),
       },
