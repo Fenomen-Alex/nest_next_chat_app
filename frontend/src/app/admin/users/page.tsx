@@ -1,55 +1,40 @@
-'use client';
-
-import { useQuery, useMutation, gql } from '@apollo/client';
 import { User } from '@/types/user';
-import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { getUser } from '@/lib/utils/getUser';
+import { redirect } from 'next/navigation';
+import { getUsers } from '@/lib/dal/auth';
 
-const GET_USERS = gql`
-  query users {
-    users {
-      id
-      name
-      email
-      role
-    }
+const Users = async () => {
+  const user = await getUser();
+  if (!user || user.role !== 'admin') {
+    redirect('/');
   }
-`;
 
-const UPDATE_USER_ROLE = gql`
-  mutation UpdateUserRole($userId: Int!, $role: String!) {
-    updateUserRole(userId: $userId, role: $role) {
-      id
-      role
-    }
-  }
-`;
-
-const Users = () => {
-  const { user } = useAuth();
-  const router = useRouter();
-  console.log(user);
-  if (!user || user.role !== 'ADMIN') {
-    // router.push('/');
-  }
-  const { loading, error, data } = useQuery(GET_USERS);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) {
-    console.log(error);
-    return <p>Error :(</p>;
-  }
+  const users = await getUsers();
+  console.log(users);
 
   return (
-    <div>
-      <h1>User Management</h1>
-      <ul>
-        {data.users.map((user: User) => (
-          <li key={user.id}>
-            {user.name} ({user.email}) - {user.role}
-          </li>
-        ))}
-      </ul>
+    <div className="container mx-auto p-4 mt-4">
+      <h1 className="text-3xl font-bold mb-4">User Management</h1>
+      <div className="overflow-x-auto">
+        <table className="table-auto w-full">
+          <thead className="">
+          <tr>
+            <th className="px-4 py-2">Name</th>
+            <th className="px-4 py-2">Email</th>
+            <th className="px-4 py-2">Role</th>
+          </tr>
+          </thead>
+          <tbody>
+          {users.map((user: User) => (
+            <tr key={user.id}>
+              <td className="border px-4 py-2">{user.name}</td>
+              <td className="border px-4 py-2">{user.email}</td>
+              <td className="border px-4 py-2">{user.role}</td>
+            </tr>
+          ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

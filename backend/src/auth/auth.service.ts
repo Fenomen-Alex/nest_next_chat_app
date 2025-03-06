@@ -19,7 +19,11 @@ export class AuthService {
     this.jwtSecret = crypto.randomBytes(32).toString('hex'); // Generate a 32-byte hex string
   }
 
-  async register(name: string, email: string, password: string): Promise<{ user: User; token: string }> {
+  async register(name: string, email: string, password: string): Promise<{
+    user: User;
+    token: string;
+    refreshToken: string
+  }> {
     const existingUser = await this.usersRepository.findOne({ where: { email } });
     if (existingUser) {
       throw new ConflictException('Email already in use');
@@ -30,9 +34,28 @@ export class AuthService {
     await this.usersRepository.save(user);
 
     const payload = { email: user.email, sub: user.id };
-    const token = this.jwtService.sign(payload, { secret: this.jwtSecret });
+    const accessToken = this.jwtService.sign(payload, { secret: this.jwtSecret, expiresIn: '1h' });
+    const refreshToken = this.jwtService.sign(payload, { secret: this.jwtSecret, expiresIn: '7d' });
 
-    return { user, token };
+    return { user, token: accessToken, refreshToken };
+  }
+
+  async refresh_token(refreshToken: string): Promise<{ token: string }> {
+    const decoded = this.jwtService.verify(refreshToken, { secret: this.jwtSecret });
+
+    if (!decoded) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const user = await this.usersRepository.findOne({ where: { email: decoded.email } });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const accessToken = this.jwtService.sign({ email: user.email, sub: user.id }, { secret: this.jwtSecret, expiresIn: '1h' });
+
+    return { token: accessToken };
   }
 
   async validateUser (email: string, password: string): Promise<any> {
