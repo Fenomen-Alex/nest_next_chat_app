@@ -3,10 +3,13 @@ import jwt from 'jsonwebtoken';
 import { refreshToken as refresh } from '@/lib/dal/auth';
 
 export async function middleware(req: NextRequest) {
+  const url = req.nextUrl.clone();
+  url.pathname = '/auth';
+  url.search = 'mode=login';
   const accessToken = req.cookies.get('token')?.value;
   const refreshToken = req.cookies.get('refresh_token')?.value;
   if (!accessToken && !refreshToken) {
-    return NextResponse.redirect(new URL('/auth?mode=login', req.url));
+    return NextResponse.redirect(url);
   }
   try {
     if (accessToken != null) {
@@ -25,14 +28,16 @@ export async function middleware(req: NextRequest) {
               return response;
             }
           }
-          return NextResponse.redirect(new URL('/auth?mode=login', req.url));
+          return NextResponse.redirect(url);
         }
       }
     }
   } catch (error: Error | any) {
     console.error(error)
-    if (error.message === 'invalid signature') {
-      return NextResponse.redirect(new URL('/auth/logout', req.url));
+    if (error.message === 'invalid signature' || error.message === 'Invalid refresh token') {
+      req.cookies.delete('token');
+      req.cookies.delete('refresh_token');
+      return NextResponse.redirect(url);
     }
 
     if (refreshToken) {
@@ -45,7 +50,7 @@ export async function middleware(req: NextRequest) {
         return response;
       }
     }
-    return NextResponse.redirect(new URL('/auth?mode=login', req.url));
+    return NextResponse.redirect(url);
   }
 }
 
