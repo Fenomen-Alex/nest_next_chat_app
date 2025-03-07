@@ -37,6 +37,7 @@ export async function middleware(req: NextRequest) {
     if (error.message === 'invalid signature' || error.message === 'Invalid refresh token') {
       req.cookies.delete('token');
       req.cookies.delete('refresh_token');
+      req.cookies.delete('user');
       return NextResponse.redirect(url);
     }
 

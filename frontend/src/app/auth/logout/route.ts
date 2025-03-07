@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
       headers: {
         'Set-Cookie': [
           `token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly`,
+          `refresh_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly`,
           `user=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly`,
         ].join(', '),
         Location: '/auth?mode=login',

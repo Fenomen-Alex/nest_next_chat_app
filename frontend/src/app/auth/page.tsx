@@ -1,11 +1,14 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import AuthForm from '@/app/auth/components/AuthForm';
+import Navbar from '@/components/common/Navbar';
 
-// @ts-ignore
-export default async function AuthPage({ searchParams }) {
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
+
+
+export default async function AuthPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
-  const isLogin = await params?.mode === 'login';
+  const isLogin = params?.mode === 'login';
   const cookieStore = await cookies();
   const token = cookieStore.get('token');
 
