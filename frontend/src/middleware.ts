@@ -33,25 +33,18 @@ export async function middleware(req: NextRequest) {
       }
     }
   } catch (error: Error | any) {
-    console.error(error)
-    if (error.message === 'invalid signature' || error.message === 'Invalid refresh token') {
-      req.cookies.delete('token');
-      req.cookies.delete('refresh_token');
-      req.cookies.delete('user');
-      return NextResponse.redirect(url);
-    }
-
-    if (refreshToken) {
-      const response = await refresh(refreshToken);
-
-      const { access_token } = response;
-      if (access_token) {
-        const response = NextResponse.next();
-        response.cookies.set('token', access_token, { httpOnly: true, path: '/' });
-        return response;
-      }
-    }
-    return NextResponse.redirect(url);
+    console.error(error);
+    return NextResponse.redirect(url, {
+      status: 302,
+      headers: {
+        'Set-Cookie': [
+          `token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly`,
+          `refresh_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly`,
+          `user=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly`,
+        ].join(', '),
+        Location: '/auth?mode=login',
+      },
+    });
   }
 }
 
