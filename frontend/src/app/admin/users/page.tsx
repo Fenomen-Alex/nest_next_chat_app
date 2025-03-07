@@ -1,6 +1,6 @@
 import { getUser } from '@/lib/utils/getUser';
 import { redirect } from 'next/navigation';
-import { getUsers } from '@/lib/dal/auth';
+import { getUsers } from '@/lib/dal/user';
 import UserTable from '@/components/user/UserTable';
 import Navbar from '@/components/common/Navbar';
 

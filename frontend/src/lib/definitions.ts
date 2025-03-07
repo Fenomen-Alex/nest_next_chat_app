@@ -44,6 +44,3 @@ export const UpdateUserSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }).trim(),
   role: z.string().min(1, 'Role is required'),
 });
-
-export type UpdateUser = z.infer<typeof UpdateUserSchema>;
-

@@ -39,17 +39,6 @@ const REFRESH_TOKEN_QUERY = gql`
   }
 `;
 
-const GET_USERS = gql`
-  query users {
-    users {
-      id
-      name
-      email
-      role
-    }
-  }
-`;
-
 export async function login(email: string, password: string) {
   try {
     const { data } = await client.mutate({
@@ -91,38 +80,3 @@ export async function refreshToken(refreshToken: string) {
   }
 }
 
-export async function getUsers() {
-  try {
-    const { data } = await client.query({
-      query: GET_USERS,
-    });
-    return data.users;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
-
-export async function updateUser(name?: string, email?: string, role?: string) {
-  const query = gql`
-    mutation {
-      updateUser(name: "${name}", email: "${email}", role: "${role}") {
-        id
-        email
-        name
-        role
-      }
-    }
-  `;
-
-  try {
-    const { data } = await client.mutate({
-      mutation: query,
-      variables: { name, email, role },
-    });
-    return data.updateUser;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}

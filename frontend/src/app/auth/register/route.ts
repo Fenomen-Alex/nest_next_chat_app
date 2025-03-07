@@ -5,6 +5,8 @@ export async function POST(request: NextRequest) {
   const { email, password, name } = await request.json();
   const { token, user, refresh_token } = await register(name, email, password);
 
+  const userString = JSON.stringify(user);
+
   return NextResponse.json(
     { message: 'Registration successful', user },
     {
@@ -13,6 +15,7 @@ export async function POST(request: NextRequest) {
         'Set-Cookie': [
           `token=${token}; Path=/; HttpOnly`,
           `refresh_token=${refresh_token}; Path=/; HttpOnly`,
+          `user=${encodeURIComponent(userString)}; Path=/; HttpOnly`,
         ].join(', '),
       },
     }

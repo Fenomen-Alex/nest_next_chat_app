@@ -14,20 +14,31 @@ const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
           <label className="block">
             Name:
             <input type="text" name="name" required className="w-full p-2 mt-1 border border-gray-300 rounded" />
+            {/*@ts-ignore*/}
+            {state?.errors?.name && (
+              <><p>Name must</p>
+                <ul>
+                  {/*@ts-ignore*/}
+                  {state.errors.name.map((error) => (
+                    <li key={error}>- {error}</li>
+                  ))}
+                </ul>
+              </>
+            )}
           </label>
         )}
         <label className="block">
           Email:
           <input type="email" name="email" required className="w-full p-2 mt-1 border border-gray-300 rounded" />
           {state?.errors?.email && (
-            <div>
-              <p>Password must:</p>
+            <>
+              <p>Email must:</p>
               <ul>
                 {state.errors.email.map((error) => (
                   <li key={error}>- {error}</li>
                 ))}
               </ul>
-            </div>
+            </>
           )}
         </label>
         <label className="block">
@@ -35,17 +46,17 @@ const AuthForm = ({ isLogin }: { isLogin: boolean }) => {
           <input type="password" name="password" required
                  className="w-full p-2 mt-1 border border-gray-300 rounded" />
           {state?.errors?.password && (
-            <div>
+            <>
               <p>Password must:</p>
               <ul>
                 {state.errors.password.map((error) => (
                   <li key={error}>- {error}</li>
                 ))}
               </ul>
-            </div>
+            </>
           )}
         </label>
-        <button type="submit" className="w-full py-2 mt-4  bg-blue-600 rounded hover:bg-blue-700">
+        <button disabled={pending} type="submit" className="w-full py-2 mt-4  bg-blue-600 rounded hover:bg-blue-700">
           {isLogin ? 'Login' : 'Register'}
         </button>
         <Link

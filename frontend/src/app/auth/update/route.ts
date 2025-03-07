@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { updateUser } from '@/lib/dal/auth';
+import { updateUser } from '@/lib/dal/user';
 
 export async function POST(request: NextRequest) {
   const { name, email, role } = await request.json();
