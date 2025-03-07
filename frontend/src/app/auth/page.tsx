@@ -1,7 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import AuthForm from '@/app/auth/components/AuthForm';
-import Navbar from '@/components/common/Navbar';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
